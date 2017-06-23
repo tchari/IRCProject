@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% block title %}Index Title{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		New Assessment
+	{% endif %}
+{% endblock %}
+
+{% block sidebarLinks %}
+	{% if user.is_authenticated %}
+		<li><a href="#">Home</a></li>
+		<li><a href="#">New Assessment</a></li>
+		<li><a href="#">Approved Assessments</a></li>
+		<li><a href="#">Open Assessments</a></li>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#CS">Case Setup</a></li>
+                    <li><a data-toggle="tab" href="#PoL">Probability of Loss</a></li>
+                    <li><a data-toggle="tab" href="#PDA">Physical Damage Assessment</a></li>
+                    <li><a data-toggle="tab" href="#BIE">Business Interruption Estimate</a></li>
+                    <li><a data-toggle="tab" href="#OL">Other Losses</a></li>
+                    <li><a data-toggle="tab" href="#CoP">Cost of Protection</a></li>
+                </ul>
+            </div>
+            <!-- /.col-md-12 -->
+        </div>
+        <form class="form-horizontal" method="post" action="#">
+            <div class="row tab-content">
+                <div id="CS" class="tab-pane fade in active">
+                    <h3 class ="col-md-offset-2">Case Setup</h3>
+                    <div class="panel panel-default col-md-7 col-md-offset-2">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="control-label col-md-1" for="site">Site:</label>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" id="site" name="site">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-1" for="unit">Unit:</label>
+                                <div class="col-md-6">
+                                    <select class="form-control" type="text" id="unit" name="unit">
+                                        <option value="packageBoiler">Package Boiler</option>
+                                        <option value="powerGenTurbine">Power Gen Turbine</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-1" for="assessor">Assessor:</label>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" id="assessor" name="assessor">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    <textarea class="form-control" id="case_desc" name="case_desc" placeholder="Case Description" required></textarea>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <div id="PoL" class="tab-pane fade">
+                    <h3 class ="col-md-offset-2">Probability of Loss</h3>
+                    <div class="panel panel-default col-md-7 col-md-offset-2">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label style="text-align:left;" class="control-label col-md-6" for="freq">Frequency of Event Happening (x10<sup>-3</sup>):</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="number" step="any" min="0" id="freq" name="freq" value="2.5">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;" class="control-label col-md-6">Adjustments</label>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left; font-weight:300;" class="control-label col-md-6" for="history">Site History and Age:</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" id="history" name="history" value="1.0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left; font-weight:300;" class="control-label col-md-6" for="serv_environ">Service and Environment:</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" id="serv_environ" name="serv_environ" value="1.0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left; font-weight:300;" class="control-label col-md-6" for="pm_opxp">Level of PM and Operator Experience:</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" id="pm_opxp" name="pm_opxp" value="1.0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left; font-weight:300;" class="control-label col-md-6" for="first_response">Access to ER and First Response:</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" id="first_response" name="first_response" value="1.0">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <div id="PDA" class="tab-pane fade">
+                    <h3 class ="col-md-offset-1">Physical Damage Assessment</h3>
+                    <div class="panel panel-default col-md-10 col-md-offset-1">
+                        <div class="panel-body">
+                            <div class="row text-center" >
+                                <div class="col-md-offset-3 col-md-2"><label>Let it Burn</label></div>
+                                <div class="col-md-2"><label>Fixed</label></div>
+                                <div class="col-md-2"><label>Mobile</label></div>
+                                <div class="col-md-2"><label>Fixed and Mobile</label></div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Total Damage/Value at Risk Ratio</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" name="PDA_LIB_totalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  step="0.01" min="0" max="1" name="PDA_Fixed_totalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" step="0.01" min="0" max="1" name="PDA_Mobile_totalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"step="0.01" min="0" max="1"  name="PDA_Mixed_totalDamage">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Estimate Additional Escalation Equipment Damages</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_LIB_estAddEscalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="PDA_Fixed_estAddEscalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_Mobile_estAddEscalDamage">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_Mixed_estAddEscalDamage">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Adjustment Factor Due to Secondary Losses</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" type="number"step="0.01" min="0" max="10" name="PDA_LIB_adjFactSecLosses">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" type="number"step="0.01" min="0" max="10" name="PDA_Fixed_adjFactSecLosses">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number type="number"step="0.01" min="0" max="10" name="PDA_Mobile_adjFactSecLosses">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" type="number"step="0.01" min="0" max="10" name="PDA_Mixed_adjFactSecLosses">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Additional Costs (if any)</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_LIB_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="PDA_Fixed_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_Mobile_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="PDA_Mixed_additional">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <div id="BIE" class="tab-pane fade">
+                    <h3 class ="col-md-offset-1">Business Interruption Estimate</h3>
+                    <div class="panel panel-default col-md-10 col-md-offset-1">
+                        <div class="panel-body">
+                            <div class="row text-center" >
+                                <div class="col-md-offset-3 col-md-2"><label>Let it Burn</label></div>
+                                <div class="col-md-2"><label>Fixed</label></div>
+                                <div class="col-md-2"><label>Mobile</label></div>
+                                <div class="col-md-2"><label>Fixed and Mobile</label></div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Plan Annual BI Value (option independent)</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_LIB_plannedAnnualBI">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Fixed_plannedAnnualBI">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mobile_plannedAnnualBI">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mixed_plannedAnnualBI">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="BIE_LIB_plannedAnnualBI">Full Production Days Lost</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_LIB_fullProdDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Fixed_fullProdDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mobile_fullProdDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mixed_fullProdDaysLost">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="BIE_LIB_plannedAnnualBI">Additional Days Lost</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_LIB_addDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Fixed_addDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mobile_addDaysLost">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mixed_addDaysLost">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Indirect or Partial Loss</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_LIB_indirectLoss">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Fixed_indirectLoss">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mobile_indirectLoss">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mixed_indirectLoss">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Additional Losses (in any)</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_LIB_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Fixed_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mobile_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="BIE_Mixed_additional">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <div id="OL" class="tab-pane fade">
+                    <h3 class ="col-md-offset-1">Other Losses</h3>
+                    <div class="panel panel-default col-md-10 col-md-offset-1">
+                        <div class="panel-body">
+                            <div class="row text-center" >
+                                <div class="col-md-offset-3 col-md-2"><label>Let it Burn</label></div>
+                                <div class="col-md-2"><label>Fixed</label></div>
+                                <div class="col-md-2"><label>Mobile</label></div>
+                                <div class="col-md-2"><label>Fixed and Mobile</label></div>
+
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Third Party Plume Effects</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_thirdPrtyPlume">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_thirdPrtyPlume">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_thirdPrtyPlume">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_thirdPrtyPlume">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Disposal of MEOH Contaminated Foam</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_disposalMEOH">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_disposalMEOH">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_disposalMEOH">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_disposalMEOH">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Shareholder/Partner Relations</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_shareholderRelations">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_shareholderRelations">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_shareholderRelations">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_shareholderRelations">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Customer/Shipping Goodwill</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_goodwill">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_goodwill">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_goodwill">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_goodwill">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Management Time</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_mgmtTime">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_mgmtTime">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_mgmtTime">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_mgmtTime">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Risk to Emergency Response Personnel</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_riskToEmergPersonnel">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_riskToEmergPersonnel">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_riskToEmergPersonnel">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_riskToEmergPersonnel">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Additional Losses (in any)</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_LIB_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Fixed_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mobile_additional">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" value="0"type="number" name="OL_Mixed_additional">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <div id="CoP" class="tab-pane fade">
+                    <h3 class ="col-md-offset-1">Cost of Protection</h3>
+                    <div class="panel panel-default col-md-10 col-md-offset-1">
+                        <br>
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <label style="text-align:left;" class="control-label col-md-2">Years of Operation</label>
+                            <div class="col-md-3"><input class="form-control" type="number" id="years" name="years"></div>
+                            <div class="col-md-5"></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <label style="text-align:left;" class="control-label col-md-2">Annual Interest Rate (%)</label>
+                            <div class="col-md-3"><input class="form-control" type="number" id="rate" name="rate"></div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row text-center" >
+                                <div class="col-md-offset-3 col-md-2"><label>Let it Burn</label></div>
+                                <div class="col-md-2"><label>Fixed</label></div>
+                                <div class="col-md-2"><label>Mobile</label></div>
+                                <div class="col-md-2"><label>Fixed and Mobile</label></div>
+
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Capital Costs</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="LIB_capEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="Fixed_capEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mobile_capEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mixed_capEx">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Areas Serviced</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="LIB_areas">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="Fixed_areas">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mobile_areas">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mixed_areas">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Other Capital Costs</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="LIB_otherCapEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="Fixed_otherCapEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mobile_otherCapEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mixed_otherCapEx">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Annual Operating Costs</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="LIB_opEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="Fixed_opEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mobile_opEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mixed_opEx">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label style="text-align:left;"  class="control-label col-md-3" for="freq">Other Annual Operating Costs (training, etc.)</label>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="LIB_otherOpEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number"  name="Fixed_otherOpEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mobile_otherOpEx">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control" type="number" name="Mixed_otherOpEx">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </div>
+        </form>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

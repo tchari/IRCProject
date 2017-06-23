@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Logged Out{% endblock %}
+
+{% block header %}Logged Out{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		<p>Welcome {{ user.get_full_name }}
+	{% endif %}
+
+Logged Out<br>
+<a href="{% url 'index' %}">Home</a>
+
+{% endblock %}
