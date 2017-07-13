@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['159.203.15.27', '127.0.0.1']
 
 INSTALLED_APPS = [
 	'IRC.apps.IrcConfig',
+	'django.contrib.humanize',
+	'django_extensions',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',

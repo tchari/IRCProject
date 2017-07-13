@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		{{costofprotection.name}}
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{% load humanize%}
+		<table>
+			<tr>
+				<td><b>Protection Type</b></td>
+				<td>{{costofprotection.type}}</td>
+			</tr>
+			<tr>
+				<td><b>Life Expectancy of the Item</b></td>
+				<td>{{costofprotection.years}}</td>
+			</tr>
+			<tr>
+				<td><b>Annual Interest Rate</b></td>
+				<td>{{costofprotection.annualInterestRate.normalize}}</td>
+			</tr>
+			<tr>
+				<td><b>Capital Cost of the Item</b></td>
+				<td>${{costofprotection.capEx|intcomma}}</td>
+			</tr>
+			<tr>
+				<td><b>Total Number of Area Serviced</b></td>
+				<td>{{costofprotection.areasServiced}}</td>
+			</tr>
+			<tr>
+				<td><b>Capital Cost per Area</b></td>
+				<td>${{costofprotection.totalCapExPerArea|intcomma}}</td>
+			</tr>
+			<tr>
+				<td><b>Other Capital Costs</b></td>
+				<td>${{costofprotection.otherCapEx|intcomma}}</td>
+			</tr>
+			<tr>
+				<td><b>Annual Amortized Capital Cost</b></td>
+				<td>${{costofprotection.annualAmortization|intcomma}}</td>
+			</tr>
+			<tr>
+				<td><b>Annual Operating Cost</b></td>
+				<td>${{costofprotection.opEx}}</td>
+			</tr>
+			<tr>
+				<td><b>Other Annual Operating Costs</b></td>
+				<td>${{costofprotection.otherOpEx|intcomma}}</td>
+			</tr>
+			<tr>
+				<td><b>Total Annual Cost of Protection</b></td>
+				<td>${{costofprotection.annualCostOfProtection|intcomma}}</td>
+			</tr>			
+		</table>
+		<br>
+		<p><a href="{% url 'protectionItem_edit' pk=costofprotection.pk %}">Edit {{costofprotection.name}}</a>
+		<p><a href="{%url 'protectionItemsListView'%}">Back  to list</a>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

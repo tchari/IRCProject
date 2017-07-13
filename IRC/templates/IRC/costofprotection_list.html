@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		List of Protection Assets
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		<a href="{% url 'protectionItem_new' %}">New Protection Item</a>
+		{% load humanize%}
+		<table class="table">	
+			<thead><tr>
+				<td>Protection Type</td>
+				<td>Asset Name</td>
+				<td>Life Expectancy of the Item</td>
+				<td>Annual Interest Rate</td>
+				<td>Capital Cost of the Item</td>
+				<td>Annual Operating Cost</td>
+				<td>Total Annual Cost of Protection</td>
+			</tr></thead>
+			<tbody>
+		{% for item in object_list %}
+			<tr>
+				<td>{{item.type}}</td>
+				<td><a href="{{ item.get_absolute_url }}">{{item.name}}</a></td>
+				<td>{{item.years}}</td>
+				<td>{{item.annualInterestRate.normalize}}</td>
+				<td>${{item.capEx|intcomma}}</td>
+				<td>${{item.opEx|intcomma}}</td>
+				<td>${{item.annualCostOfProtection|intcomma}}</td>
+			</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

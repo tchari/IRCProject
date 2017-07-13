@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}New Assessment{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		{% if present == 'caseSetup' %}
+			Case Setup
+		{% elif present == 'probLoss' %}
+			Probability of Loss
+		{% elif present == 'dmgAss' %}
+			Damage Assessment: {{name}}
+		{% else %}
+			Unknown Form Type
+		{% endif %}
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{% if form.errors %}
+			<h4>Input Errors</h4>
+		{% endif %}
+		<form method="POST" class="post-form">{% csrf_token %}
+			<table>
+			{% if present == 'caseSetup' %}
+				{% for field in form %}
+					{% if field.id_for_label == 'id_site' %}
+					<tr>
+						<th><label for="{{field.id_for_label}}">{{field.label}}: {{sitename}}</label></th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					{% else %}
+					<tr>
+						<th><label for="{{field.id_for_label}}">{{field.label}}: </label></th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					{% endif %}
+				{% endfor %}
+			{% elif present == 'probLoss' %}
+				{% for field in form %}
+					{% if field.id_for_label == 'id_case' %}
+					<tr>
+						<th><label for="{{field.id_for_label}}"></label>Case ID #{{field.value}}</th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					{% elif field.id_for_label == 'id_freq' %}
+					<tr>
+						<th><label for="{{field.id_for_label}}">{{field.label}}: </label></th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					<tr>
+						<th><u>Adjustments</u></th>
+						<td></td>
+						<td></td>
+					<tr>
+					{% else %}
+					<tr>
+						<th><label for="{{field.id_for_label}}">{{field.label}}: </label></th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					{% endif%}
+				{% endfor %}
+			{% elif present == 'dmgAss' %}
+				{% for field in form %}
+					<tr>
+						<th><label for="{{field.id_for_label}}">{{field.label}}: </label></th>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+				{% endfor %}
+			{% else %}
+				<p>Invalid form?
+			{% endif %}
+			</table>
+			<button type="submit" class="save btn btn-default">Enter</button>
+			<a href="{% url 'assessmentsListView' %}">Cancel</a>
+		</form>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

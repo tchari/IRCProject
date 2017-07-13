@@ -7,15 +7,6 @@
 	{% endif %}
 {% endblock %}
 
-{% block sidebarLinks %}
-	{% if user.is_authenticated %}
-		<li><a href="#">Home</a></li>
-		<li><a href="#">New Assessment</a></li>
-		<li><a href="#">Approved Assessments</a></li>
-		<li><a href="#">Open Assessments</a></li>
-	{% endif %}
-{% endblock %}
-
 {% block content %}
 	{%if user.is_authenticated %}
 

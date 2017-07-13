@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Input Form{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		Edit {{post.name}}
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		<form method="POST" class="post-form">{% csrf_token %}
+			<table>
+				{{ form.as_table }}
+			</table>
+			<button type="submit" class="save btn btn-default">Enter</button>
+			<a href="{{ post.get_absolute_url }}">Cancel</a>
+		</form>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

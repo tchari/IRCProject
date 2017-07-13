@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Input Form{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		List of Units
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{% load humanize %}
+		<a href="{% url 'unit_new' %}">New Unit</a>
+		<table class="table">	
+			<thead><tr>
+				<td>Unit Name</td>
+				<td>Basis</td>
+				<td>Link to Equipment/Equipment Type</td>
+				<td>Frequency of Event Happening</td>
+				<td>Value at Risk</td>
+			</tr></thead>
+			<tbody>
+		{% for unit in object_list %}
+			<tr>
+				<!-- <td><a href="{{ unit.get_absolute_url }}">{{unit.name}}</a></td> -->
+				<td><a href="{{ unit.get_absolute_url }}">{{unit.name}}</a></td>
+				<td>{{unit.basis}}</td>
+				<td>{{unit.link}}</td>
+				<td>{{unit.freq.normalize}}</td>
+				<td>{{unit.value|intcomma}}</td>
+			</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

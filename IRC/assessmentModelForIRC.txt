@@ -1,0 +1,117 @@
+class Assessment(models.Model):
+	##Case Setup
+	site = models.CharField(max_length=200)
+	unit = models.CharField(max_length=200)
+	assessorFirstName = models.CharField(max_length=200)
+	assessorLastName = models.CharField(max_length=200)
+	#assessorIDNum = models.CharField(max_length=200)
+	#caseDesc = models.LongTextualDescriptions....
+	
+	##Probability of Loss
+	freqOfEvent = models.DecimalField()
+	adjSiteHist_Age = models.DecimalField()
+	adjServ_Env = models.DecimalField()
+	adjPMLvl_OpExp = models.DecimalField()
+	adjER_FstResp = models.DecimalField()
+	
+	##Physical Damage Assessment
+	DmgToValueRatio = models.DecimalField()
+	libAddEscalationDmgs = models.DecimalField()
+	libAdjForSecLoss = models.DecimalField()
+	libAddPDALosses = models.DecimalField()
+	
+	fixedAddEscalationDmgs = models.DecimalField()
+	fixedAdjForSecLoss = models.DecimalField()
+	fixedAddPDALosses = models.DecimalField()
+
+	mobileAddEscalationDmgs = models.DecimalField()
+	mobileAdjForSecLoss = models.DecimalField()
+	mobileAddPDALosses = models.DecimalField()
+
+	mixedAddEscalationDmgs = models.DecimalField()
+	mixedAdjForSecLoss = models.DecimalField()
+	mixedAddPDALosses = models.DecimalField()
+	
+	##Business Interruption Estimate
+	PlanAnnualBIValue = models.DecimalField()
+	
+	libDaysLost_FullProd = models.DecimalField()
+	libDaysLost_Additional = models.DecimalField()
+	libLossIndirect_Partial = models.DecimalField()
+	libAddBIELosses = models.DecimalField()
+	
+	fixedDaysLost_FullProd = models.DecimalField()
+	fixedDaysLost_Additional = models.DecimalField()
+	fixedLossIndirect_Partial = models.DecimalField()
+	fixedAddBIELosses = models.DecimalField()
+	
+	mobileDaysLost_FullProd = models.DecimalField()
+	mobileDaysLost_Additional = models.DecimalField()
+	mobileLossIndirect_Partial = models.DecimalField()
+	mobileAddBIELosses = models.DecimalField()
+	
+	mixedDaysLost_FullProd = models.DecimalField()
+	mixedDaysLost_Additional = models.DecimalField()
+	mixedLossIndirect_Partial = models.DecimalField()
+	mixedAddBIELosses = models.DecimalField()	
+	
+	##Other Losses
+	lib3rdPrtyPlm = models.DecimalField()
+	libMEOHDisp = models.DecimalField()
+	libShrehld_PrtnrRelation = models.DecimalField()
+	libGoodwill = models.DecimalField()
+	libMgmtTime = models.DecimalField()
+	libRiskToFrstRspdrs = models.DecimalField()
+	libAddOLLosses = models.DecimalField()
+
+	fixed3rdPrtyPlm = models.DecimalField()
+	fixedMEOHDisp = models.DecimalField()
+	fixedShrehld_PrtnrRelation = models.DecimalField()
+	fixedGoodwill = models.DecimalField()
+	fixedMgmtTime = models.DecimalField()
+	fixedRiskToFrstRspdrs = models.DecimalField()
+	fixedAddOLLosses = models.DecimalField()	
+
+	mobile3rdPrtyPlm = models.DecimalField()
+	mobileMEOHDisp = models.DecimalField()
+	mobileShrehld_PrtnrRelation = models.DecimalField()
+	mobileGoodwill = models.DecimalField()
+	mobileMgmtTime = models.DecimalField()
+	mobileRiskToFrstRspdrs = models.DecimalField()
+	mobileAddOLLosses = models.DecimalField()
+	
+	mobile3rdPrtyPlm = models.DecimalField()
+	mobileMEOHDisp = models.DecimalField()
+	mobileShrehld_PrtnrRelation = models.DecimalField()
+	mobileGoodwill = models.DecimalField()
+	mobileMgmtTime = models.DecimalField()
+	mobileRiskToFrstRspdrs = models.DecimalField()
+	mobileAddOLLosses = models.DecimalField()	
+	
+	##Cost of Protection
+	#yearsOfOperation = models.SmallInteger()
+	annualInterestRate = models.DecimalField()
+	
+	libCapEX = models.DecimalField()
+	libAreasServiced = models.DecimalField()
+	libOtherCapEX = models.DecimalField()
+	libAnnOpEX = models.DecimalField()
+	libOtherAnnOpEx = models.DecimalField()
+	
+	fixedCapEX = models.DecimalField()
+	fixedAreasServiced = models.DecimalField()
+	fixedOtherCapEX = models.DecimalField()
+	fixedAnnOpEX = models.DecimalField()
+	fixedOtherAnnOpEx = models.DecimalField()	
+
+	mobileCapEX = models.DecimalField()
+	mobileAreasServiced = models.DecimalField()
+	mobileOtherCapEX = models.DecimalField()
+	mobileAnnOpEX = models.DecimalField()
+	mobileOtherAnnOpEx = models.DecimalField()	
+
+	mixedCapEX = models.DecimalField()
+	mixedAreasServiced = models.DecimalField()
+	mixedOtherCapEX = models.DecimalField()
+	mixedAnnOpEX = models.DecimalField()
+	mixedOtherAnnOpEx = models.DecimalField()

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		{{casesetup.site}} 
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{%load humanize%}
+		<p>Site: {{casesetup.site}}
+		<p>Description: {{casesetup.desc}}
+		<br><br>
+		<p>Unit: {{casesetup.unit}}
+		<p>Unit Basis: {{casesetup.unit.basis}}
+		<p>Unit Link: {{casesetup.unit.link}}
+		<p>Unit Freq: {{casesetup.unit.freq.normalize}}
+		<p>Unit Value at Risk: {{casesetup.unit.value|intcomma}}
+		<br><br>
+		<h3>Protection Types</h3>
+		{% for protection in probabilityLoss.protection.all %}
+			<p>Name: {{protection.name}}
+			<p>Years: {{protection.years}}
+			<p>CapEx: {{protection.capEx|intcomma}}
+			<p>Interest Rate: {{protection.annualInterestRate.normalize}}
+			<p>Amortized Cost: {{protection.annualAmortization|intcomma}}
+			<p>OpEx: {{protection.opEx|intcomma}}
+			<p>Annual Cost of Protection: {{protection.annualCostOfProtection|intcomma}}
+			<br><br>
+		{% endfor %}
+		{% for dmgass in dmgAss %}
+			<p>Name: {{dmgass.case.name}}
+			<p>Damage to Value at Risk Ratio: {{dmgass.damageToValueRiskRatio.normalize}}
+		{% endfor %}
+		<p><a href="{%url 'assessmentsListView'%}">Back to list</a>
+		{%comment%} <p><a href="{% url 'unit_edit' pk=unit.pk %}">Edit {{unit.name}}</a> {%endcomment%}
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

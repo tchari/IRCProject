@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Input Form{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		{{unit.name}} 
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{% load humanize %}
+		<table>
+			<tr>
+				<td><b>Unit Name</b></td>
+				<td>{{unit.name}}</td>
+			</tr>
+			<tr>
+				<td><b>Basis</b></td>
+				<td>{{unit.basis}}</td>
+			</tr>
+			<tr>
+				<td><b>Link to Equipment/Equipment Type</b></td>
+				<td>{{unit.link}}</td>
+			</tr>
+			<tr>
+				<td><b>Frequency of Event Happening</b></td>
+				<td>{{unit.freq.normalize}}</td>
+			</tr>
+			<tr>
+				<td><b>Value at Risk</b></td>
+				<td>{{unit.value|intcomma}}</td>
+			</tr>			
+		</table>
+		<p><a href="{%url 'unitsListView'%}">Back  to list</a>
+		<p><a href="{% url 'unit_edit' pk=unit.pk %}">Edit {{unit.name}}</a>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

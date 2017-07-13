@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}New Unit{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		New Unit
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		<form method="POST" class="post-form">{% csrf_token %}
+			<table>
+			{{ form.as_table }}
+			</table>
+			<button type="submit" class="save btn btn-default">Enter</button>
+			<a href="{% url 'unitsListView' %}">Cancel</a>
+		</form>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}
