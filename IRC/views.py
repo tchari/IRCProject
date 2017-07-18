@@ -165,7 +165,6 @@ class AssessmentsDetailView(DetailView):
 		annLossRed = []
 		PVAnnLoss = []
 		sum = 0
-		print(len(annualCostOfProtection))
 		for index in range(len(annualCostOfProtection)):
 			#print(item)
 			costOfProtectionRow.append(annualCostOfProtection[index])
@@ -208,8 +207,6 @@ def Assessments_cancel(request):
 	return redirect('assessmentsListView')
 		
 def Assessments_new(request):
-	global dmgAssCounter
-	global dmgAssCounterInit
 	current_user = request.user
 	if request.method == "POST": #Not the first time, could be probabilty of loss or dmgass forms.
 		post = request.POST
@@ -237,45 +234,41 @@ def Assessments_new(request):
 			probLossFormRet = ProbabilityOfLossForm(post)
 			if probLossFormRet.is_valid():
 				probLossFormObj = probLossFormRet.save()
+				dmgAssCounter = DamageAssessmentCounter(probLoss = probLossFormObj, init = probLossFormObj.numProtections, curVal = probLossFormObj.numProtections)
+				dmgAssCounter.save()
 				dmgAssForm = DamageAssessmentForm(initial={'case': probLossFormObj.case.pk})		
-				dmgAssCounterInit = probLossFormObj.numProtections
-				dmgAssCounter = dmgAssCounterInit
 				name = "Let it Burn"
 				context = {'present':'dmgAss', 'form': dmgAssForm, 'name': name, 'case_id':probLossFormObj.case.pk}
-				print("Damage Assessment Counter: "+str(dmgAssCounter))
 			else:
 				context ={'present': 'probLoss', 'form': probLossFormRet, 'case_id':probLossFormObj.case.pk}
 		
 		else: #Process the damage assessment form and present the next damage assesssment form or end
 			dmgAssFormRet = DamageAssessmentForm(post)
 			if dmgAssFormRet.is_valid():
-				if dmgAssCounter == dmgAssCounterInit: #First damage assessment is Let it Burn
-					dmgAssFormObj = dmgAssFormRet.save(commit=False)
+				dmgAssFormObj = dmgAssFormRet.save(commit=False)
+				probLossQuery = ProbabilityOfLoss.objects.get(case = dmgAssFormObj.case.pk)
+				query = probLossQuery.protection.all()
+				dmgAssCounter = DamageAssessmentCounter.objects.get(probLoss = dmgAssFormObj.case.pk)
+				if dmgAssCounter.is_init(): #First damage assessment is Let it Burn
 					dmgAssForm = DamageAssessmentForm(initial={'case': dmgAssFormObj.case.pk, 'name': ' '})
-					probLossQuery = ProbabilityOfLoss.objects.get(case = dmgAssFormObj.case.pk)
-					query = probLossQuery.protection.all()
 					dmgAssFormObj.name = "Let It Burn"
 					dmgAssFormObj.save()
-					dmgAssCounter -= 1
-					context = {'present':'dmgAss', 'form': dmgAssForm, 'name':query[dmgAssCounter], 'case_id':dmgAssFormObj.case.pk}
-				elif dmgAssCounter > -1: #Subsequent assessment forms are given by the protection type
-					dmgAssFormObj = dmgAssFormRet.save(commit=False)
+					dmgAssCounter.decrement()
+					dmgAssCounter.save()
+					context = {'present':'dmgAss', 'form': dmgAssForm, 'name':query[dmgAssCounter.curVal], 'case_id':dmgAssFormObj.case.pk}
+				elif dmgAssCounter.curVal > -1: #Subsequent assessment forms are given by the protection type
 					dmgAssForm = DamageAssessmentForm(initial={'case': dmgAssFormObj.case.pk, 'name': ' '})
-					probLossQuery = ProbabilityOfLoss.objects.get(case = dmgAssFormObj.case.pk)
-					query = probLossQuery.protection.all()
-					dmgAssFormObj.name = str(query[dmgAssCounter])
+					dmgAssFormObj.name = str(query[dmgAssCounter.curVal])
 					dmgAssFormObj.save()
-					dmgAssCounter -= 1
-					if dmgAssCounter < 0:
+					dmgAssCounter.decrement()
+					dmgAssCounter.save()
+					if dmgAssCounter.curVal < 0:
 						name = 'Mixed'
 					else:
-						name = query[dmgAssCounter]
+						name = query[dmgAssCounter.curVal]
 					context = {'present':'dmgAss', 'form': dmgAssForm, 'name':name, 'case_id':dmgAssFormObj.case.pk}
 				else: #Final 
 					##Create Final Report --> Don't forget to calculate MIXED too.
-					dmgAssFormObj = dmgAssFormRet.save(commit=False)
-					probLossQuery = ProbabilityOfLoss.objects.get(case = dmgAssFormObj.case.pk)
-					query = probLossQuery.protection.all()
 					dmgAssFormObj.name = "Mixed"
 					dmgAssFormObj.save()
 					return redirect('assessmentsListView')

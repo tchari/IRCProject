@@ -209,6 +209,31 @@ class DamageAssessment(models.Model):
 	def get_totalLosses(self):
 		return self.get_totalDamageCost+self.get_totalBIE+self.get_totalOL
 		
-	
+class DamageAssessmentCounter(models.Model):
+	probLoss = models.OneToOneField(
+			ProbabilityOfLoss,
+			on_delete=models.CASCADE,
+			editable=False,
+			default=1
+		)
+	init = models.PositiveSmallIntegerField()
+	curVal = models.SmallIntegerField()
+
+	def decrement(self):
+		self.curVal = self.curVal-1
+		if self.curVal < self.init:
+			return 1
+		else:
+			return 0
+
+	def is_init(self):
+		if self.curVal == self.init:
+			return True
+		else:
+			return False
+
+	def __str__(self):
+		return str(self.curVal)
+
 
 
