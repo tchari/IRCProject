@@ -62,11 +62,15 @@ class ProbabilityOfLossForm(forms.ModelForm):
 		}
 
 class DamageAssessmentForm(forms.ModelForm):
+	
+	name = forms.CharField(widget = forms.HiddenInput(), required=False)
+	
 	class Meta:
 		model = DamageAssessment
 		fields = '__all__'
 		widgets = {
-			'case': forms.HiddenInput()
+			'case': forms.HiddenInput(),
+			'name': forms.HiddenInput()
 		}
 		labels = {
 			"damageToValueRiskRatio": "Ratio of Total Damage to Value at Risk",

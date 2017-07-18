@@ -3,17 +3,15 @@
 
 {% block header %}
 	{% if user.is_authenticated %}
-		IRC Assessments
+		IRC Assessment Portal
 	{% endif %}	
 {% endblock %}
 
 {% block content %}
 	{%if user.is_authenticated %}
 		
-		<h2>Index Content</h2>
-		{% for i in assessmentList %}
-			<p>{{ i.site }}
-		{% endfor %}
+		<h2>Welcome {{user}}!</h2>
+		<div>Please use the side bar menu to view or create a new assessment, protection type, or unit.
 
 	{% else %}
 		<a href="{% url 'login'%}"> Login Here</a><br>

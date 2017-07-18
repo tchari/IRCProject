@@ -13,6 +13,8 @@
 			<thead><tr>
 				<td>Site</td>
 				<td>Description</td>
+				<td>Assessment Type</td>
+				<td>Unit</td>
 			</tr></thead>
 			<tbody>
 		{% for casesetup in object_list %}
@@ -20,6 +22,8 @@
 				<!-- <td><a href="{{ unit.get_absolute_url }}">{{unit.name}}</a></td> -->
 				<td><a href="{{ casesetup.get_absolute_url }}">{{casesetup.site}}</a></td>
 				<td>{{casesetup.desc}}</td>
+				<td>{{casesetup.type}}</td>
+				<td>{{casesetup.unit}}</td>
 			</tr>
 		{% endfor %}
 			</tbody>

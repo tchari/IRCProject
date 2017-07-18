@@ -19,6 +19,7 @@ assessments = [
 	url(r'^Assessments/(?P<pk>\d+)$', views.AssessmentsDetailView.as_view(), name='assessmentsDetailView'),
 #	url(r'^Assessments/(?P<pk>\d+)/edit/$', views.Assessments_edit, name='assessment_edit'),
 	url(r'Assessments/new/', views.Assessments_new, name='assessment_new'),
+	url(r'Assessments/cancel/', views.Assessments_cancel, name='assessment_cancel'),
 ]
 
 units = [

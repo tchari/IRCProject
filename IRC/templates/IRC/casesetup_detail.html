@@ -9,30 +9,79 @@
 {% block content %}
 	{%if user.is_authenticated %}
 		{%load humanize%}
-		<p>Site: {{casesetup.site}}
-		<p>Description: {{casesetup.desc}}
+		<p>Case Description: {{casesetup.desc}}
 		<br><br>
-		<p>Unit: {{casesetup.unit}}
-		<p>Unit Basis: {{casesetup.unit.basis}}
-		<p>Unit Link: {{casesetup.unit.link}}
-		<p>Unit Freq: {{casesetup.unit.freq.normalize}}
-		<p>Unit Value at Risk: {{casesetup.unit.value|intcomma}}
-		<br><br>
-		<h3>Protection Types</h3>
-		{% for protection in probabilityLoss.protection.all %}
-			<p>Name: {{protection.name}}
-			<p>Years: {{protection.years}}
-			<p>CapEx: {{protection.capEx|intcomma}}
-			<p>Interest Rate: {{protection.annualInterestRate.normalize}}
-			<p>Amortized Cost: {{protection.annualAmortization|intcomma}}
-			<p>OpEx: {{protection.opEx|intcomma}}
-			<p>Annual Cost of Protection: {{protection.annualCostOfProtection|intcomma}}
-			<br><br>
-		{% endfor %}
-		{% for dmgass in dmgAss %}
-			<p>Name: {{dmgass.case.name}}
-			<p>Damage to Value at Risk Ratio: {{dmgass.damageToValueRiskRatio.normalize}}
-		{% endfor %}
+		<h1>Benefit-Cost Assessment</h1>
+		<table class="table">
+			{% for benefitsCostRow in benefitsCostTable %}
+				{%if 'Let it Burn' in benefitsCostRow %}
+					<thead><tr>
+						{% for benefitCostCell in benefitsCostRow%}
+							<th>{{benefitCostCell}}
+						{%endfor%}
+					</tr></thead>
+					<tbody>
+				{%else%}
+					<tr>
+						{% for benefitCostCell in benefitsCostRow %}
+							<td>{{benefitCostCell|intcomma}}
+						{%endfor%}
+					</tr>
+				{%endif%}
+			{% endfor %}
+		</table>
+		<h1>Assessment Review</h1>
+		<table class="table">
+		{% for entries in dmgAssTransposed%}
+			{% if 'Let It Burn' in entries %}
+				<thead><tr>
+				{% for things in entries %}
+				<th>{{things}}
+				{% endfor %}
+				</tr></thead>
+				<tbody>
+			{% elif 'pdalabel' in entries %}
+				<tr>
+					<td colspan="4"><b>Physical Damage Assessment</b>
+				</tr>
+			{% elif 'bielabel' in entries %}
+				<tr>
+					<td colspan="4"><b>Business Interruption Estimate</b>
+				</tr>
+			{% elif 'ollabel' in entries %}
+				<tr>
+					<td colspan="4"><b>Other Loss Liabilities</b>
+				</tr>
+			{% else %}
+				<tr>
+				{% for things in entries %}
+				<td>{{things|intcomma}}
+				{% endfor %}
+				</tr>
+			{% endif %}
+		{%endfor%}
+		</tbody>
+		</table>
+		
+		<table class="table">
+			{% for CoP in costOfProtectionList %}
+				{%if 'Cost of Protection' in CoP %}
+					<thead><tr>
+						{% for element in CoP%}
+							<th>{{element}}
+						{% endfor %}
+					</tr></thead>
+					<tbody>
+				{% else %}
+					<tr>
+						{% for element in CoP %}
+							<td>{{element}}
+						{%endfor%}
+					</tr>
+				{%endif%}
+			{% endfor %}
+		</tbody>
+		</table>
 		<p><a href="{%url 'assessmentsListView'%}">Back to list</a>
 		{%comment%} <p><a href="{% url 'unit_edit' pk=unit.pk %}">Edit {{unit.name}}</a> {%endcomment%}
 	{% else %}

@@ -67,19 +67,70 @@
 				{% endfor %}
 			{% elif present == 'dmgAss' %}
 				{% for field in form %}
+					{% if field.id_for_label == 'id_case'%}
 					<tr>
-						<th><label for="{{field.id_for_label}}">{{field.label}}: </label></th>
+						<td><label for="{{field.id_for_label}}">Case ID #{{field.value}}</label></td>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>					
+					{% elif field.id_for_label == 'id_name' %}
+					<tr>
+						<td><label for="{{field.id_for_label}}">{{name}}</label></td>
 						<td>{{field}}</td>
 						<td>{{field.errors.as_text|cut:"* "}}<td>
 					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>					
+					<tr>
+						<td><h4><center>Physical Damage Assessment</center></h4></td>
+					</tr>					
+					{% elif field.id_for_label == 'id_adjustmentForSecondaryLosses' %}
+					<tr>
+						<td class="col-md-3"><label for="{{field.id_for_label}}">{{field.label}}: </label></td>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>					
+					<tr>
+						<td><h4><center>Business Interruption Estimate</center></h4></td>
+					</tr>					
+					{% elif field.id_for_label == 'id_otherBIELosses' %}
+					<tr>
+						<td  class="col-md-3"><label for="{{field.id_for_label}}">{{field.label}}: </label></td>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><h4><center>Other Losses</center></h4></td>
+					</tr>															
+					{% else %}
+					<tr>
+						<td  class="col-md-3"><label for="{{field.id_for_label}}">{{field.label}}: </label></td>
+						<td>{{field}}</td>
+						<td>{{field.errors.as_text|cut:"* "}}<td>
+					</tr>
+					{% endif %}
 				{% endfor %}
 			{% else %}
 				<p>Invalid form?
 			{% endif %}
 			</table>
 			<button type="submit" class="save btn btn-default">Enter</button>
-			<a href="{% url 'assessmentsListView' %}">Cancel</a>
 		</form>
+		<form method="POST" class="post-form" action="{% url 'assessment_cancel' %}">{% csrf_token %}
+			{% if present == 'caseSetup' %}
+				<a href="{% url 'assessmentsListView' %}">Cancel</a>
+			{% else %}
+				<input type="hidden" name="case" value="{{case_id}}" id="id_case">
+				<button type="submit" class="save btn btn-default">Cancel</button>
+			{% endif %}
+		</form>		
 	{% else %}
 		<a href="{% url 'login'%}"> Login Here</a><br>
 	{% endif %}

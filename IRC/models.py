@@ -104,11 +104,11 @@ class CaseSetup(models.Model):
 	
 
 	def __str__(self):
-		return self.site
+		return str(self.site)
 
 		
 	def name(self):
-		return self.site + " - " + str(self.unit)
+		return str(self.site) + " - " + str(self.unit)
 		
 	def get_absolute_url(self):
 		return reverse('assessmentsDetailView', args=[str(self.pk)])
@@ -134,14 +134,14 @@ class ProbabilityOfLoss(models.Model):
 		return self.protection.count()
 	
 	def __str__(self):
-		return self.case.site
+		return str(self.case.site)
 
 class DamageAssessment(models.Model):
 	case = models.ForeignKey(
 		CaseSetup,
 		on_delete=models.CASCADE
 	)
-
+	name = models.CharField(max_length=200)
 	#PDA
 	damageToValueRiskRatio = models.DecimalField(max_digits=3, decimal_places=2)
 	#Damage Estimate = valueAtRisk*damageToValueRiskRatio
@@ -170,7 +170,45 @@ class DamageAssessment(models.Model):
 	otherOLLosses = models.DecimalField(max_digits=14, decimal_places=2)
 	
 	def __str__(self):
-		return self.case.site
+		return str(self.case.site)
+	#PDA calcs
+	@property
+	def get_valueAtRisk(self):
+		probLoss = ProbabilityOfLoss.objects.get(pk=self.case.pk)
+		return probLoss.value
+	@property
+	def get_damageEstimate(self):
+		return round(self.get_valueAtRisk*self.damageToValueRiskRatio,2)
+	@property
+	def get_subtotalProperyDmg(self):
+		return self.get_damageEstimate + self.additionalEscalationDamages
+	@property
+	def get_totalDamageCost(self):
+		return round(self.get_subtotalProperyDmg*self.adjustmentForSecondaryLosses,2)
+	@property
+	def get_secLossesType(self):
+		print(type(self.get_subtotalProperyDmg))
+		return 1
+	#BIE calcs
+	@property
+	def get_totalEquidDaysLost(self):
+		return self.fullProductionDaysLost + self.additionalDaysLost
+	@property
+	def get_directBILoss(self):
+		return round((self.annualPlantBIEValue*(Decimal(self.get_totalEquidDaysLost)/365)),2)
+	@property
+	def get_totalBIE(self):
+		return self.get_directBILoss + self.indirectOrPartialLoss + self.otherBIELosses
+
+	#OL calcs
+	@property
+	def get_totalOL(self):
+		return self.thirdPartyPlume + self.disposalOfMEOH + self.shareholderPartnerRelationship + self.customerGoodwill + self.managementTime + self.riskToEmergPersonnel + self.otherOLLosses
+
+	@property
+	def get_totalLosses(self):
+		return self.get_totalDamageCost+self.get_totalBIE+self.get_totalOL
+		
 	
 
 
