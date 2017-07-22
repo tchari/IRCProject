@@ -467,7 +467,7 @@ def PDFWriteCell(p, y, label, text):
 def exportPDF(request):
 
 	response = HttpResponse(content_type='application/pdf')
-	response['Content-Disposition'] = 'attachment; filename="somename.pdf"'
+	response['Content-Disposition'] = 'attachment; filename="report.pdf"'
 	
 	pk = request.session['pk']
 	SA = get_object_or_404(StandardAssessment, pk=pk)
