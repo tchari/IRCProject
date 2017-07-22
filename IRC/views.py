@@ -434,18 +434,35 @@ def StandardAssessments_edit(request, pk):
 ##Views related to exporting a PDF##
 ####################################
 
-def smartLineBreak(text,num):
+def splitText(text,num):
     if len(text)<num:
-        return text
+    	return [text]
     else:
-        #1. find the first space <= num
-        inds = [abs(i-num) for i, x in enumerate(text) if x == " "]
-        ind = inds[inds.index(min(inds))]+num
-        first = text[:ind]
-        second = text[ind+1:]
-        out = ''.join([first,second])
-        return out
+        outlist = []
+        while len(text)>num:
+            val = num
+            inds = [i for i, x in enumerate(text) if x == " "]
+            while val not in inds:
+                val -= 1
+            outlist.append(text[:val])
+            text = text[val+1:]
 
+        outlist.append(text) 
+        return outlist
+
+def PDFWriteCell(p, y, label, text):
+	num = 100
+	#print(text)
+	listed_text = splitText(text,num)#[text[i:i+num] for i in range(0, len(text), num)]
+	p.setFont("Helvetica-Bold", 8)
+	p.drawString(inch*1, y, label)
+	p.setFont("Helvetica", 8)
+	for lines in listed_text:
+		#print(len(lines))
+		p.drawString(inch*2, y, lines)
+		y -= p._leading
+
+	return y
 
 def exportPDF(request):
 
@@ -490,25 +507,20 @@ def exportPDF(request):
 			p.drawString(inch*(i+1), inch*8.75, str(ALR[i]))
 			p.drawString(inch*(i+1), inch*8.5, str(BCR[i]))
 
-	p.setFont("Helvetica-Bold", 8)
-	p.drawString(inch*1, inch*8, 'Case Description')
-	p.drawString(inch*1, inch*7.5, 'Let it Burn')
-	p.drawString(inch*1, inch*7, 'Fixed')
-	p.drawString(inch*1, inch*6.5, 'Mobile')
-	p.drawString(inch*1, inch*6, 'Fixed and Mobile')
-	p.drawString(inch*1, inch*5.5, 'Results')
-	p.drawString(inch*1, inch*5, 'Assumptions')
-	p.drawString(inch*1, inch*4.5, 'Conclusions')
 	p.setFont("Helvetica", 8)
-	p.drawString(inch*2, inch*8, smartLineBreak(SA.summary_CaseDesc,35))
-	p.drawString(inch*2, inch*7.5, smartLineBreak(SA.summary_L,35))	
-	p.drawString(inch*2, inch*7, smartLineBreak(SA.summary_F,35))	
-	p.drawString(inch*2, inch*6.5, smartLineBreak(SA.summary_M,35))	
-	p.drawString(inch*2, inch*6, smartLineBreak(SA.summary_FM,35))	
-	p.drawString(inch*2, inch*5.5, smartLineBreak(SA.summary_Results,35))
-	p.drawString(inch*2, inch*5, smartLineBreak(SA.summary_Ass,35))
-	p.drawString(inch*2, inch*4.5, smartLineBreak(SA.summary_Conc,35))
-	
+	y_sectionSpacing = 0.1*inch
+	y = PDFWriteCell(p, inch*8, 'Case Description', SA.summary_CaseDesc)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Let it Burn', SA.summary_L)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Fixed', SA.summary_F)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Mobile', SA.summary_M)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Fixed and Mobile', SA.summary_FM)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Results', SA.summary_Results)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Assumptions', SA.summary_Ass)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Conclusions', SA.summary_Conc)-y_sectionSpacing
 	p.showPage()
+	
+	#Write the detailed part next.
+	p.drawString(100,750,SA.title+' Detailed Report')
+
 	p.save()
 	return response
