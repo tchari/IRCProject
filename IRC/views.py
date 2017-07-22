@@ -2,11 +2,33 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4, legal, landscape 
+from math import ceil
 from .financials import PV
 from .forms import *
 from .models import *
 
 ###Error Handling
+def roundList(inList):
+	newList = [ceil(val) for val in inList[1:]]
+	newList.insert(0,inList[0])
+	return newList
+
+def FormParsing(FormHTML):
+	
+	q = FormHTML.as_p().split('\n')
+	out = []
+	for i in q:
+		if ("title" and "Site:" and "unit") not in i:
+			collect = []
+			if "_desc" not in i:
+				collect.append(i)
+				collect.append(q[q.index(i)+1])
+			out.append(collect)
+	return out			
 
 
 
@@ -340,6 +362,7 @@ def Units_edit(request, pk):
 	post = get_object_or_404(Unit, pk=pk)
 	if request.method == "POST":
 		form = UnitForm(request.POST, instance=post)
+		print(form.errors)
 		obj = form.save()
 		return redirect(obj)
 	else:
@@ -349,3 +372,143 @@ def Units_edit(request, pk):
 ##End Views related to the Unit model##
 #######################################
 
+#################################################
+##Views related to the StandardAssessment model##
+#################################################
+
+class StandardAssessmentsListView(ListView):
+	model = StandardAssessment
+
+class StandardAssessmentsDetailView(DetailView):
+	model = StandardAssessment
+	
+	def get_context_data(self, **kwargs):
+		self.request.session['pk'] = self.object.pk
+		
+		context = super(StandardAssessmentsDetailView, self).get_context_data(**kwargs)
+		SA = context['standardassessment']
+		label = [' ', 'Let it Burn', 'Fixed', 'Mobile', 'Fixed and Mobile']
+		annCOP = ['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP]
+		L_TL = SA.L_PDA_total + SA.L_BIE_totalBIE + SA.L_OL_total
+		F_TL = SA.F_PDA_total + SA.F_BIE_totalBIE + SA.F_OL_total
+		M_TL = SA.M_PDA_total + SA.M_BIE_totalBIE + SA.M_OL_total
+		FM_TL = SA.FM_PDA_total + SA.FM_BIE_totalBIE + SA.FM_OL_total
+		totalLoss = ['Total Loss', L_TL, F_TL, M_TL, FM_TL]
+		PL = ['Probability of Loss', SA.L_PL_freq, SA.F_PL_freq, SA.M_PL_freq, SA.FM_PL_freq]
+		RBL = ['Risk Based Loss', SA.L_PL_freq*L_TL, SA.F_PL_freq*F_TL, SA.M_PL_freq*M_TL, SA.FM_PL_freq*FM_TL]
+		ALR = ['Annual Loss Reduction with Protection', RBL[1]-RBL[1], RBL[1]-RBL[2], RBL[1]-RBL[3], RBL[1]-RBL[4]]
+		BCR = ['Benefit-to-Cost Ratio', 0, round((ALR[2]/annCOP[2])*10)/10, round((ALR[3]/annCOP[3])*10)/10, round((ALR[4]/annCOP[4])*10)/10]
+		context['BCR_Table'] = [label, roundList(annCOP), roundList(totalLoss), PL, roundList(RBL), roundList(ALR), BCR]
+		context['Summary_Table'] = [['Case Description', SA.summary_CaseDesc],['Let it Burn', SA.summary_L],['Fixed', SA.summary_F],['Mobile', SA.summary_M],['Fixed and Mobile', SA.summary_FM],['Results', SA.summary_Results],['Assumptions and Options Considered', SA.summary_Ass],['Conclusions', SA.summary_Conc]]
+
+		return context
+		#print(context)
+
+def StandardAssessments_new(request):
+	if request.method == "POST":
+		SAform = StandardAssessmentForm(request.POST)
+		if SAform.is_valid():
+			SAObj = SAform.save()
+			return redirect(SAObj)
+		else:
+			return render(request, 'IRC/standardassessment_error.html', {'form': SAform})
+	else:
+		SAform = StandardAssessmentForm()
+		return render(request, 'IRC/standardassessment_new.html', {'form': SAform})
+
+def StandardAssessments_edit(request, pk):
+	post = get_object_or_404(StandardAssessment, pk=pk)
+	if request.method == "POST":
+		form = StandardAssessmentForm(request.POST, instance=post)
+		SAObj = form.save()
+		return redirect(SAObj)
+	else:
+		form = StandardAssessmentForm(instance=post)
+		return render(request, 'IRC/standardassessment_edit.html', {'form': form, 'post': post})	
+
+#################################################
+##Views related to the StandardAssessment model##
+#################################################
+
+####################################
+##Views related to exporting a PDF##
+####################################
+
+def smartLineBreak(text,num):
+    if len(text)<num:
+        return text
+    else:
+        #1. find the first space <= num
+        inds = [abs(i-num) for i, x in enumerate(text) if x == " "]
+        ind = inds[inds.index(min(inds))]+num
+        first = text[:ind]
+        second = text[ind+1:]
+        out = ''.join([first,second])
+        return out
+
+
+def exportPDF(request):
+
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'attachment; filename="somename.pdf"'
+	
+	pk = request.session['pk']
+	SA = get_object_or_404(StandardAssessment, pk=pk)
+	label = [' ', 'Let it Burn', 'Fixed', 'Mobile', 'Fixed and Mobile']
+	annCOP = roundList(['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP])
+	L_TL = SA.L_PDA_total + SA.L_BIE_totalBIE + SA.L_OL_total
+	F_TL = SA.F_PDA_total + SA.F_BIE_totalBIE + SA.F_OL_total
+	M_TL = SA.M_PDA_total + SA.M_BIE_totalBIE + SA.M_OL_total
+	FM_TL = SA.FM_PDA_total + SA.FM_BIE_totalBIE + SA.FM_OL_total
+	totalLoss = roundList(['Total Loss', L_TL, F_TL, M_TL, FM_TL])
+	PL = ['Probability of Loss', SA.L_PL_freq, SA.F_PL_freq, SA.M_PL_freq, SA.FM_PL_freq]
+	RBL = roundList(['Risk Based Loss', SA.L_PL_freq*L_TL, SA.F_PL_freq*F_TL, SA.M_PL_freq*M_TL, SA.FM_PL_freq*FM_TL])
+	ALR = roundList(['Annual Loss Reduction', RBL[1]-RBL[1], RBL[1]-RBL[2], RBL[1]-RBL[3], RBL[1]-RBL[4]])
+	BCR = ['Benefit-to-Cost Ratio', 0, round((ALR[2]/annCOP[2])*10)/10, round((ALR[3]/annCOP[3])*10)/10, round((ALR[4]/annCOP[4])*10)/10]
+	
+	p = canvas.Canvas(response, pagesize=A4)
+	p.drawString(inch*1,inch*10.5,str(SA.title))
+	
+	
+	for i,lab in enumerate(label):
+		if i>0:
+			p.setFont("Helvetica", 8)
+			p.drawString(inch*(i+2), inch*10, str(lab))
+			p.drawString(inch*(i+2), inch*9.75, '${:,}'.format(annCOP[i]))
+			p.drawString(inch*(i+2), inch*9.5, '${:,}'.format(totalLoss[i]))
+			p.drawString(inch*(i+2), inch*9.25, '{:.2e}'.format(PL[i]))
+			p.drawString(inch*(i+2), inch*9.0, '${:,}'.format(RBL[i]))
+			p.drawString(inch*(i+2), inch*8.75, '${:,}'.format(ALR[i]))
+			p.drawString(inch*(i+2), inch*8.5, str(BCR[i]))	
+		else:
+			p.setFont("Helvetica-Bold", 8)
+			p.drawString(inch*(i+1), inch*10, str(lab))
+			p.drawString(inch*(i+1), inch*9.75, str(annCOP[i]))
+			p.drawString(inch*(i+1), inch*9.5, str(totalLoss[i]))
+			p.drawString(inch*(i+1), inch*9.25, str(PL[i]))
+			p.drawString(inch*(i+1), inch*9.0, str(RBL[i]))
+			p.drawString(inch*(i+1), inch*8.75, str(ALR[i]))
+			p.drawString(inch*(i+1), inch*8.5, str(BCR[i]))
+
+	p.setFont("Helvetica-Bold", 8)
+	p.drawString(inch*1, inch*8, 'Case Description')
+	p.drawString(inch*1, inch*7.5, 'Let it Burn')
+	p.drawString(inch*1, inch*7, 'Fixed')
+	p.drawString(inch*1, inch*6.5, 'Mobile')
+	p.drawString(inch*1, inch*6, 'Fixed and Mobile')
+	p.drawString(inch*1, inch*5.5, 'Results')
+	p.drawString(inch*1, inch*5, 'Assumptions')
+	p.drawString(inch*1, inch*4.5, 'Conclusions')
+	p.setFont("Helvetica", 8)
+	p.drawString(inch*2, inch*8, smartLineBreak(SA.summary_CaseDesc,35))
+	p.drawString(inch*2, inch*7.5, smartLineBreak(SA.summary_L,35))	
+	p.drawString(inch*2, inch*7, smartLineBreak(SA.summary_F,35))	
+	p.drawString(inch*2, inch*6.5, smartLineBreak(SA.summary_M,35))	
+	p.drawString(inch*2, inch*6, smartLineBreak(SA.summary_FM,35))	
+	p.drawString(inch*2, inch*5.5, smartLineBreak(SA.summary_Results,35))
+	p.drawString(inch*2, inch*5, smartLineBreak(SA.summary_Ass,35))
+	p.drawString(inch*2, inch*4.5, smartLineBreak(SA.summary_Conc,35))
+	
+	p.showPage()
+	p.save()
+	return response

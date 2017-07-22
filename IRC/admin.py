@@ -12,6 +12,7 @@ admin.site.register(CostOfProtection)
 admin.site.register(CaseSetup)
 admin.site.register(ProbabilityOfLoss)
 admin.site.register(DamageAssessment)
+admin.site.register(StandardAssessment)
 
 class UserProfileInline(admin.TabularInline):
 	model = Profile

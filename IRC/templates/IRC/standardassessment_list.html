@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Input Form{% endblock %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		List of Assessments
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{% load humanize %}
+		<a href="{% url 'SA_new' %}">New Unit</a>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-2" style="margin-top:10px">Assessment Title</div>
+				<div class="col-lg-2" style="margin-top:10px">Site</div>
+				<div class="col-lg-2" style="margin-top:10px">Unit</div>
+			</div>
+			{%for assessment in object_list%}
+			<div class="row">
+				<div class="col-lg-2" style="margin-top:10px"><a href="{{assessment.get_absolute_url}}">{{assessment.title}}</a></div>
+				<div class="col-lg-2" style="margin-top:10px">{{assessment.site}}</div>
+				<div class="col-lg-2" style="margin-top:10px">{{assessment.unit}}</div>			
+			</div>
+			{%endfor%}
+		</div>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

@@ -27,11 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['159.203.15.27', '127.0.0.1']
 
-
 # Application definition
 
 INSTALLED_APPS = [
 	'IRC.apps.IrcConfig',
+	'widget_tweaks',
 	'django.contrib.humanize',
 	'django_extensions',
 	'django.contrib.admin',

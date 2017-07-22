@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	{% if user.is_authenticated %}
+		{{casesetup.site}} 
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{%if user.is_authenticated %}
+		{%load humanize%}
+		<h2>Summary Table</h2>
+		{%for row in BCR_Table%}
+			{%if forloop.counter0 == 0 %}
+			<div class="row">
+				{%for cell in row%}
+					{%if forloop.counter0 == 0%}
+					<div class="col-lg-3 col-md-1" style="margin-top:10px;"><b>{{cell}}</b></div>
+					{%else%}
+					<div class="col-lg-1 col-md-1" style="margin-top:10px;"><b>{{cell}}</b></div>
+					{%endif%}
+				{%endfor%}
+			</div>
+			{%elif forloop.counter0 == 3%}
+			<div class="row">
+				{%for cell in row%}
+					{%if forloop.counter0 == 0%}
+					<div class="col-lg-3 col-md-1" style="margin-top:10px;"><b>{{cell}}</b></div>
+					{%else%}
+					<div class="col-lg-1 col-md-1" style="margin-top:10px;">{{cell|stringformat:".2e"}}</div>
+					{%endif%}
+				{%endfor%}
+			</div>			
+			{%else%}		
+			<div class="row">
+				{%for cell in row%}
+					{%if forloop.counter0 == 0%}
+					<div class="col-lg-3 col-md-1" style="margin-top:10px;"><b>{{cell}}</b></div>
+					{%else%}
+					<div class="col-lg-1 col-md-1" style="margin-top:10px;">{{cell|intcomma}}</div>
+					{%endif%}
+				{%endfor%}
+			</div>
+			{%endif%}
+		{%endfor%}
+		<br><br>
+		<div class="row">
+			<div class="col-lg-12 col-lg-offset-1"><h2>Summary of Results</h2></div>
+		</div>
+		{%for row in Summary_Table%}
+			<div class="row">
+				{%for cell in row%}
+					{%if forloop.counter0 == 0%}
+						<div class="col-lg-2 col-lg-offset-1" style="margin-top:10px;"><h4>{{cell}}</h4></div>
+					{%else%}
+						<div class="col-lg-3" style="margin-top:10px;">{{cell}}</div>
+					{%endif%}
+				{%endfor%}
+			</div>
+		{%endfor%}
+		<br><br>
+		<p><a href="{% url 'exportPDF' %}">Export PDF</a>
+		<p><a href="{% url 'SAListView' %}">Back  to list</a>
+		<p><a href="{% url 'SA_edit' pk=standardassessment.pk %}">Edit</a>
+	{% else %}
+		<a href="{% url 'login'%}"> Login Here</a><br>
+	{% endif %}
+{% endblock %}

@@ -1,5 +1,7 @@
 from django import forms
 from .models import *
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout
 
 class CoPForm(forms.ModelForm):
 	class Meta:
@@ -89,3 +91,9 @@ class DamageAssessmentForm(forms.ModelForm):
 			"riskToEmergPersonnel": "Risk to Emergency Response Personnel",
 			"otherOLLosses": "Enter Other Additional Losses (if any)"			
 		}
+
+class StandardAssessmentForm(forms.ModelForm):
+
+	class Meta:
+		model = StandardAssessment
+		fields = '__all__'

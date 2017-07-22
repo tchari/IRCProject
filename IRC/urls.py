@@ -29,6 +29,18 @@ units = [
 	url(r'Units/new/', views.Units_new, name='unit_new'),
 ]
 
+SA = [
+	url(r'^formonday/$', views.StandardAssessmentsListView.as_view(), name='SAListView'),
+	url(r'^formonday/(?P<pk>\d+)$', views.StandardAssessmentsDetailView.as_view(), name='SADetailView'),
+	url(r'^formonday/(?P<pk>\d+)/edit/$', views.StandardAssessments_edit, name='SA_edit'),
+	url(r'formonday/new/', views.StandardAssessments_new, name='SA_new'),
+]
+
+exportPDF = [
+	url(r'^exportPDF/$', views.exportPDF, name='exportPDF')
+]
 urlpatterns += protectionItems
 urlpatterns += assessments
 urlpatterns += units
+urlpatterns += SA
+urlpatterns += exportPDF
