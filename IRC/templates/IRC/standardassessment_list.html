@@ -13,13 +13,13 @@
 		<a href="{% url 'SA_new' %}">New Unit</a>
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-2" style="margin-top:10px">Assessment Title</div>
+				<div class="col-lg-3" style="margin-top:10px">Assessment Title</div>
 				<div class="col-lg-2" style="margin-top:10px">Site</div>
 				<div class="col-lg-2" style="margin-top:10px">Unit</div>
 			</div>
 			{%for assessment in object_list%}
 			<div class="row">
-				<div class="col-lg-2" style="margin-top:10px"><a href="{{assessment.get_absolute_url}}">{{assessment.title}}</a></div>
+				<div class="col-lg-3" style="margin-top:10px"><a href="{{assessment.get_absolute_url}}">{{assessment.title}}</a></div>
 				<div class="col-lg-2" style="margin-top:10px">{{assessment.site}}</div>
 				<div class="col-lg-2" style="margin-top:10px">{{assessment.unit}}</div>			
 			</div>

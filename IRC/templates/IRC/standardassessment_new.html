@@ -326,7 +326,7 @@
 				document.getElementById(outtag).value = roundUp((parseFloat(val)*parseFloat(adj) + parseFloat(add)),100);
 			}
 			function calcPDATotalDmg(sub, adj, other, outtag){
-				document.getElementById(outtag).value = roundUp((parseFloat(sub)*parseFloat(adj) + parseFloat(other)),100);
+				document.getElementById(outtag).value = roundUp((parseFloat(sub)*(parseFloat(adj)+parseFloat(1)) + parseFloat(other)),100);
 			}
 			function calcTotalDays(full, add, outtag){
 				document.getElementById(outtag).value = parseInt(full) + parseInt(add);
