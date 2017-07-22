@@ -453,7 +453,7 @@ def splitText(text,num):
 def PDFWriteCell(p, y, label, text):
 	num = 100
 	#print(text)
-	listed_text = splitText(text,num)#[text[i:i+num] for i in range(0, len(text), num)]
+	listed_text = splitText(text,num) #[text[i:i+num] for i in range(0, len(text), num)]
 	p.setFont("Helvetica-Bold", 8)
 	p.drawString(inch*1, y, label)
 	p.setFont("Helvetica", 8)
@@ -462,6 +462,42 @@ def PDFWriteCell(p, y, label, text):
 		p.drawString(inch*2, y, lines)
 		y -= p._leading
 
+	return y
+
+def PDFWriteRow(p, y, label, value, text):
+	num = 50
+	listed_text = splitText(text, num)
+	p.setFont("Helvetica-Bold", 8)
+	p.drawString(inch*1, y, label)
+	p.setFont("Helvetica", 8)
+	#Set the numerical value to be printed
+	if value < 0.01:
+		value_str = '{:.2e}'.format(value)
+	elif value > 100:
+		value_str = '${:,}'.format(round(value))
+	else:
+		value_str = str(value)
+	p.drawString(inch*3.5, y, value_str)
+	z = 0
+	for lines in listed_text:
+		z+=1
+		p.drawString(inch*4.5, y, lines)
+		y -= p._leading
+
+	return y
+
+def newPage(p):
+	p.showPage()
+	p.drawString(inch*1, inch*10.5, "Name")
+	p.drawString(inch*3.5, inch*10.5, "Quantity")
+	p.drawString(inch*4.5, inch*10.5, "Comments")
+	return inch*10
+
+def writeHeader(p,y,fontSize, text):
+	p.setFont("Helvetica", fontSize)
+	p.drawString(inch*1, y, text)
+	y -= inch*0.25
+	p.setFont("Helvetica", 8)	
 	return y
 
 def exportPDF(request):
@@ -517,10 +553,81 @@ def exportPDF(request):
 	y = PDFWriteCell(p, y, 'Results', SA.summary_Results)-y_sectionSpacing
 	y = PDFWriteCell(p, y, 'Assumptions', SA.summary_Ass)-y_sectionSpacing
 	y = PDFWriteCell(p, y, 'Conclusions', SA.summary_Conc)-y_sectionSpacing
-	p.showPage()
 	
-	#Write the detailed part next.
-	p.drawString(100,750,SA.title+' Detailed Report')
+	p.showPage()
+	p.drawString(inch*1,inch*11,SA.title+' Detailed Report')
+	#p.drawString(x,y,text)
+	y = inch*10+y_sectionSpacing
+	fields, verboseNames = zip(*[(f.name, f.verbose_name) for f in StandardAssessment._meta.get_fields()])
+	ind = 4
+	header = False
+	subheader = False
+	cur_subheader = ''
+	cur_header = ''
+	while ind < (len(fields)-8):
+		name = fields[ind]
+		change_header = bool(cur_header not in name) #the current field name is not part of the current header. Change the header
+		change_subheader = bool(cur_subheader not in name[:2])
+		if not header:
+			if 'PL_' in name:
+				y = writeHeader(p,y-inch*0.25,14,"Probability of Loss")
+				cur_header = 'PL_'
+			elif 'PDA_' in name:
+				y = writeHeader(p,y-inch*0.25,14,"Physical Damage Assessment")
+				cur_header = 'PDA_'
+			elif 'BIE_' in name:
+				y = writeHeader(p,y-inch*0.25,14,"Business Interruption Estimate")
+				cur_header = 'BIE_'
+			elif 'OL_' in name:
+				y = writeHeader(p,y-inch*0.25,14,"Other Losses")
+				cur_header = 'OL_'
+			elif 'COP_' in name:
+				y = writeHeader(p,y-inch*0.25,14,"Cost of Protection")
+				print(fields[ind])
+				print(fields[ind+1])
+				print(fields[ind+2])
+				#y = PDFWriteRow(p, y, verboseNames[ind], getattr(SA, fields[ind]), '')-y_sectionSpacing*1.5
+				#y = PDFWriteRow(p, y, verboseNames[ind+1], getattr(SA, fields[ind+1]), '')-y_sectionSpacing*1.5
+				ind += 2
+				cur_header = 'COP_'
+			else:
+				print("Unknown header")
+				cur_header = 'UNK_'
+			header = True
+		elif not subheader:
+			if 'L_' in name[:2]:
+				y = writeHeader(p,y,10,"Let it Burn")
+				cur_subheader = 'L_'
+			elif 'F_' in name[:2]:
+				y = writeHeader(p,y,10,"Fixed")
+				cur_subheader = 'F_'
+			elif 'M_' in name[:2]:
+				y = writeHeader(p,y,10,"Mobile")
+				cur_subheader = 'M_'
+			elif 'FM' in name[:2]:
+				y = writeHeader(p,y,10,"Fixed and Mobile")
+				cur_subheader = 'FM'
+			else:
+				print(fields[ind])
+				ind += 2
+			subheader = True
+		elif change_header:
+			header = False
+		elif change_subheader:
+			subheader = False			
+		else:
+			value = getattr(SA, fields[ind])
+			text = getattr(SA, fields[ind+1])
+			if verboseNames[ind] == 'COP lifeTime':
+				ind += 1
+			elif verboseNames[ind] == 'COP interestRate':
+				ind += 1
+			else:
+				y = PDFWriteRow(p, y, verboseNames[ind], value, text)-y_sectionSpacing*1.5
+				ind +=2
 
+			if y<inch:
+				y = newPage(p)
+		
 	p.save()
 	return response
