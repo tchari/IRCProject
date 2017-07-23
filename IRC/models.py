@@ -254,6 +254,7 @@ class StandardAssessment(models.Model):
 	DECIMALFIELD_NODECIMAL = 0
 	DECIMALFIELD_CENTS = 2
 	DAYSINAYEAR = Decimal(365)
+	number = models.PositiveSmallIntegerField(verbose_name="Assessment Number")
 	title = models.TextField(max_length=CHARFIELD_MAXLENGTH)
 	site = models.CharField(max_length=CHARFIELD_MAXLENGTH)
 	unit = models.CharField(max_length=CHARFIELD_MAXLENGTH)
