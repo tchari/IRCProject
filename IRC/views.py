@@ -424,7 +424,7 @@ def StandardAssessments_edit(request, pk):
 		return redirect(SAObj)
 	else:
 		form = StandardAssessmentForm(instance=post)
-		return render(request, 'IRC/standardassessment_edit.html', {'form': form, 'post': post})	
+		return render(request, 'IRC/standardassessment_new.html', {'form': form, 'post': post})	
 
 #################################################
 ##Views related to the StandardAssessment model##
