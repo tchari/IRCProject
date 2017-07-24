@@ -114,7 +114,7 @@
 				<tr class="PL2"><td>Full Equivalent Production Days Lost (days)</td><td>{{form.F_BIE_fullProdDaysLost|attr:"onchange:calcTotalDays(document.getElementById('id_F_BIE_fullProdDaysLost').value,document.getElementById('id_F_BIE_addProdDaysLost').value,'id_F_BIE_totalDaysLost' )"}}</td><td>{{form.F_BIE_fullProdDaysLost_desc|attr:"cols:40"|attr:"rows:2"}}</td></tr>
 				<tr class="PL1"><td>Additonal Equivalent Production Days Lost (days)</td><td>{{form.F_BIE_addProdDaysLost|attr:"onchange:calcTotalDays(document.getElementById('id_F_BIE_fullProdDaysLost').value,document.getElementById('id_F_BIE_addProdDaysLost').value,'id_F_BIE_totalDaysLost' )"}}</td><td>{{form.F_BIE_addProdDaysLost_desc|attr:"cols:40"|attr:"rows:2"}}</td></tr>
 				<tr class="PL2"><td>Total Equivalent Production Days Lost (days)</td><td>{{form.F_BIE_totalDaysLost|attr:"class:calc"}}<div onclick="calcTotalDays(document.getElementById('id_F_BIE_fullProdDaysLost').value,document.getElementById('id_F_BIE_addProdDaysLost').value,'id_F_BIE_totalDaysLost' )" style="color:red; background-color:black"><b>Click to Calculate</b></div></td><td>{{form.F_BIE_totalDaysLost_desc|attr:"class:calc"|attr:"cols:40"|attr:"rows:2"}}</td></tr>
-				<tr class="PL1"><td>Direct BI Loss ($)</td><td>{{form.F_BIE_directBILoss|attr:"onfocus:calcDirectBI(document.getElementById('id_F_BIE_annBIEValue').value,document.getElementById('id_F_BIE_totalDaysLost').value,'id_F_BIE_directBILoss' )"|attr:"class:calc"}}<div onclick="calcDirectBI(document.getElementById('id_M_BIE_annBIEValue').value,document.getElementById('id_M_BIE_totalDaysLost').value,'id_M_BIE_directBILoss' )" style="color:red; background-color:black"><b>Click to Calculate</b></div></td><td>{{form.F_BIE_directBILoss_desc|attr:"class:calc"|attr:"cols:40"|attr:"rows:2"}}</td></tr>
+				<tr class="PL1"><td>Direct BI Loss ($)</td><td>{{form.F_BIE_directBILoss|attr:"onfocus:calcDirectBI(document.getElementById('id_F_BIE_annBIEValue').value,document.getElementById('id_F_BIE_totalDaysLost').value,'id_F_BIE_directBILoss' )"|attr:"class:calc"}}<div onclick="calcDirectBI(document.getElementById('id_F_BIE_annBIEValue').value,document.getElementById('id_F_BIE_totalDaysLost').value,'id_F_BIE_directBILoss' )" style="color:red; background-color:black"><b>Click to Calculate</b></div></td><td>{{form.F_BIE_directBILoss_desc|attr:"class:calc"|attr:"cols:40"|attr:"rows:2"}}</td></tr>
 				<tr class="PL2"><td>Other BI Losses ($)</td><td>{{form.F_BIE_other}}</td><td>{{form.F_BIE_other_desc|attr:"cols:40"|attr:"rows:2"}}</td></tr>
 				<tr class="PL1"><td>Total BI Losses ($)</td><td>{{form.F_BIE_totalBIE|attr:"onfocus:calcTotalBI(document.getElementById('id_F_BIE_other').value,document.getElementById('id_F_BIE_directBILoss').value,'id_F_BIE_totalBIE' )"|attr:"class:calc"}}<div onclick="calcTotalBI(document.getElementById('id_F_BIE_other').value,document.getElementById('id_F_BIE_directBILoss').value,'id_F_BIE_totalBIE' )" style="color:red; background-color:black"><b>Click to Calculate</b></div></td><td>{{form.F_BIE_totalBIE_desc|attr:"class:calc"|attr:"cols:40"|attr:"rows:2"}}</td></tr>
 
@@ -418,10 +418,10 @@
 				document.getElementById("FM_BCR").innerHTML = roundUp(((L_RBL - FM_RBL)/FM_COP),10);
 				
 				var num = 123456.789
-				document.getElementById("id_summary_L").value = "Max exposure is $"+toMKT(L_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL - L_RBL)+". The Benefit-to-Cost ratio is 0.";
-				document.getElementById("id_summary_F").value = "Max exposure is $"+toMKT(F_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL - F_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - F_RBL)/F_COP),10)+".";
-				document.getElementById("id_summary_M").value = "Max exposure is $"+toMKT(M_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL - M_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - M_RBL)/M_COP),10)+".";
-				document.getElementById("id_summary_FM").value = "Max exposure is $"+toMKT(FM_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL - FM_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - FM_RBL)/FM_COP),10)+".";
+				document.getElementById("id_summary_L").value = "Max exposure is $"+toMKT(L_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL)+". The Benefit-to-Cost ratio is 0.";
+				document.getElementById("id_summary_F").value = "Max exposure is $"+toMKT(F_TotalLoss)+", with Annual Loss exposure of $"+toMKT(F_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - F_RBL)/F_COP),10)+".";
+				document.getElementById("id_summary_M").value = "Max exposure is $"+toMKT(M_TotalLoss)+", with Annual Loss exposure of $"+toMKT(M_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - M_RBL)/M_COP),10)+".";
+				document.getElementById("id_summary_FM").value = "Max exposure is $"+toMKT(FM_TotalLoss)+", with Annual Loss exposure of $"+toMKT(FM_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - FM_RBL)/FM_COP),10)+".";
 			}
 			function roundUp(num, precision){
 				return Math.ceil(num*precision)/precision
@@ -431,17 +431,20 @@
 				if(base<1){
 					return roundUp(num,100)
 				}
+				else if (base<100){
+					return roundUp(num,1)
+				}
 				else if (base<1000){
-					return num
+					return roundUp((num/1000),10)+"K"
 				}
 				else if (base<1000000){
-					return roundUp((num/1000),1)+"K"
+					return roundUp((num/1000),10)+"K"
 				}
 				else if (base<1000000000){
-					return roundUp((num/1000000),1)+"M"
+					return roundUp((num/1000000),10)+"M"
 				}
 				else{
-					return roundUp((num/1000000000),1)+"T"
+					return roundUp((num/1000000000),10)+"T"
 				}
 			}
 			function getIFactor(){

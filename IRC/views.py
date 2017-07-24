@@ -450,13 +450,12 @@ def splitText(text,num):
         outlist.append(text) 
         return outlist
 
-def PDFWriteCell(p, y, label, text):
-	num = 100
+def PDFWriteCell(p, num, font_size, y, label, text):
 	#print(text)
 	listed_text = splitText(text,num) #[text[i:i+num] for i in range(0, len(text), num)]
-	p.setFont("Helvetica-Bold", 8)
+	p.setFont("Helvetica-Bold", font_size)
 	p.drawString(inch*1, y, label)
-	p.setFont("Helvetica", 8)
+	p.setFont("Helvetica", font_size)
 	for lines in listed_text:
 		#print(len(lines))
 		p.drawString(inch*2, y, lines)
@@ -522,14 +521,17 @@ def exportPDF(request):
 	p = canvas.Canvas(response, pagesize=A4)
 
 	
-	p.drawString(inch*1,inch*10.5,("Assessment #"+str(SA.number)+"-"+str(SA.title)))
+	titleText = ("Assessment #"+str(SA.number)+"-"+str(SA.title))
+	y = PDFWriteCell(p, 50, 16, inch*10.5,'', titleText)
+	#p.drawString(inch*1,inch*10.5,titleText)
 	p.setFont("Helvetica", 8)
-	p.drawString(inch*1,inch*10.3,"Site: "+str(SA.site))
-	p.drawString(inch*1,inch*10.1,"Unit: "+str(SA.unit))
-	
-	
+	p.drawString(inch*1,y,"Site: "+str(SA.site))
+	y -= 0.2*inch
+	p.drawString(inch*1,y,"Unit: "+str(SA.unit))
+	y -= 0.3*inch
+	y_save = y
 	for i,lab in enumerate(label):
-		y = inch*9.8
+		y = y_save
 		del_y = inch*0.25
 		if i>0:
 			p.setFont("Helvetica", 8)
@@ -564,20 +566,20 @@ def exportPDF(request):
 			p.drawString(inch*(i+1), y, str(BCR[i]))
 			y -= del_y
 
-	p.setFont("Helvetica", 8)
 	y_sectionSpacing = 0.1*inch
-	y = PDFWriteCell(p, y-0.25*inch, 'Case Description', SA.summary_CaseDesc)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Base Case', SA.summary_L)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Fixed', SA.summary_F)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Mobile', SA.summary_M)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Fixed and Mobile', SA.summary_FM)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Results', SA.summary_Results)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Assumptions', SA.summary_Ass)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Conclusions', SA.summary_Conc)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y-0.25*inch, 'Case Description', SA.summary_CaseDesc)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Base Case', SA.summary_L)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Fixed', SA.summary_F)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Mobile', SA.summary_M)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Fixed and Mobile', SA.summary_FM)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Results', SA.summary_Results)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Assumptions', SA.summary_Ass)-y_sectionSpacing
+	y = PDFWriteCell(p, 100, 8, y, 'Conclusions', SA.summary_Conc)-y_sectionSpacing
 	
 	p.showPage()
-	p.drawString(inch*1,inch*11,"Assessment #"+str(SA.number)+"-"+str(SA.title)+' Detailed Report')
-	y = inch*10.75+y_sectionSpacing
+	titleText = 'Detailed Report'
+	y = PDFWriteCell(p, 50, 16, inch*10.5,'', titleText)
+	#y = inch*10.75+y_sectionSpacing
 	fields, verboseNames = zip(*[(f.name, f.verbose_name) for f in StandardAssessment._meta.get_fields()])
 	ind = 5
 	header = False
