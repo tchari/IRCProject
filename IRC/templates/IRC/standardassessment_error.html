@@ -12,11 +12,6 @@
 		{% for error in form.errors %}
 			<p>{{error}} -- {{error.as_text}}
 		{% endfor %}
-		<h2>Summary Table</h2>
-		<br><br>
-		<p><a href="{% url 'exportPDF' %}">Export PDF</a>
-		<p><a href="{% url 'SAListView' %}">Back  to list</a>
-		<p><a href="{% url 'SA_edit' pk=standardassessment.pk %}">Edit</a>
 	{% else %}
 		<a href="{% url 'login'%}"> Login Here</a><br>
 	{% endif %}
