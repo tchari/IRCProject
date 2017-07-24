@@ -17,13 +17,15 @@
 				<div class="col-lg-3" style="margin-top:10px">Assessment Title</div>
 				<div class="col-lg-1" style="margin-top:10px">Site</div>
 				<div class="col-lg-1" style="margin-top:10px">Unit</div>
+				<div class="col-lg-4" style="margin-top:10px">Unit</div>
 			</div>
 			{%for assessment in object_list%}
 			<div class="row">
 				<div class="col-lg-1" style="margin-top:10px">{{assessment.number}}</div>
 				<div class="col-lg-3" style="margin-top:10px"><a href="{{assessment.get_absolute_url}}">{{assessment.title}}</a></div>
 				<div class="col-lg-1" style="margin-top:10px">{{assessment.site}}</div>
-				<div class="col-lg-1" style="margin-top:10px">{{assessment.unit}}</div>			
+				<div class="col-lg-1" style="margin-top:10px">{{assessment.unit}}</div>
+				<div class="col-lg-1" style="margin-top:10px">{{assessment.summary_CaseDesc}}</div>
 			</div>
 			{%endfor%}
 		</div>
