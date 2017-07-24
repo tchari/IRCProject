@@ -413,15 +413,14 @@
 				document.getElementById("FM_ALR").innerHTML = roundUp((L_RBL - FM_RBL),100);
 				
 				document.getElementById("L_BCR").innerHTML = 0;
-				document.getElementById("F_BCR").innerHTML = roundUp(((L_RBL - F_RBL)/F_COP),10);
-				document.getElementById("M_BCR").innerHTML = roundUp(((L_RBL - M_RBL)/M_COP),10);
-				document.getElementById("FM_BCR").innerHTML = roundUp(((L_RBL - FM_RBL)/FM_COP),10);
+				document.getElementById("F_BCR").innerHTML = Math.round((L_RBL - F_RBL)/F_COP*10)/10;
+				document.getElementById("M_BCR").innerHTML = Math.round((L_RBL - M_RBL)/M_COP*10)/10;
+				document.getElementById("FM_BCR").innerHTML = Math.round((L_RBL - FM_RBL)/FM_COP*10)/10;
 				
-				var num = 123456.789
 				document.getElementById("id_summary_L").value = "Max exposure is $"+toMKT(L_TotalLoss)+", with Annual Loss exposure of $"+toMKT(L_RBL)+". The Benefit-to-Cost ratio is 0.";
-				document.getElementById("id_summary_F").value = "Max exposure is $"+toMKT(F_TotalLoss)+", with Annual Loss exposure of $"+toMKT(F_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - F_RBL)/F_COP),10)+".";
-				document.getElementById("id_summary_M").value = "Max exposure is $"+toMKT(M_TotalLoss)+", with Annual Loss exposure of $"+toMKT(M_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - M_RBL)/M_COP),10)+".";
-				document.getElementById("id_summary_FM").value = "Max exposure is $"+toMKT(FM_TotalLoss)+", with Annual Loss exposure of $"+toMKT(FM_RBL)+". The Benefit-to-Cost ratio is "+roundUp(((L_RBL - FM_RBL)/FM_COP),10)+".";
+				document.getElementById("id_summary_F").value = "Max exposure is $"+toMKT(F_TotalLoss)+", with Annual Loss exposure of $"+toMKT(F_RBL)+". The Benefit-to-Cost ratio is "+Math.round((L_RBL - F_RBL)/F_COP*10)/10+".";
+				document.getElementById("id_summary_M").value = "Max exposure is $"+toMKT(M_TotalLoss)+", with Annual Loss exposure of $"+toMKT(M_RBL)+". The Benefit-to-Cost ratio is "+Math.round((L_RBL - F_RBL)/F_COP*10)/10+".";
+				document.getElementById("id_summary_FM").value = "Max exposure is $"+toMKT(FM_TotalLoss)+", with Annual Loss exposure of $"+toMKT(FM_RBL)+". The Benefit-to-Cost ratio is "+Math.round((L_RBL - F_RBL)/F_COP*10)/10+".";
 			}
 			function roundUp(num, precision){
 				return Math.ceil(num*precision)/precision
