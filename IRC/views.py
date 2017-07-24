@@ -202,7 +202,7 @@ class AssessmentsDetailView(DetailView):
 		costOfProtectionRow.insert(1,0)
 		costOfProtectionRow[3], costOfProtectionRow[2] = costOfProtectionRow[2], costOfProtectionRow[3]
 		tags.append('Mixed')
-		tags.insert(1,'Let it Burn')
+		tags.insert(1,'Base Case')
 		tags[3], tags[2] = tags[2], tags[3]
 		totalLoss.append(totalLosses[-1])
 		totalLoss.insert(0,'Total Losses')
@@ -259,7 +259,7 @@ def Assessments_new(request):
 				dmgAssCounter = DamageAssessmentCounter(probLoss = probLossFormObj, init = probLossFormObj.numProtections, curVal = probLossFormObj.numProtections)
 				dmgAssCounter.save()
 				dmgAssForm = DamageAssessmentForm(initial={'case': probLossFormObj.case.pk})		
-				name = "Let it Burn"
+				name = "Base Case"
 				context = {'present':'dmgAss', 'form': dmgAssForm, 'name': name, 'case_id':probLossFormObj.case.pk}
 			else:
 				context ={'present': 'probLoss', 'form': probLossFormRet, 'case_id':probLossFormObj.case.pk}
@@ -271,7 +271,7 @@ def Assessments_new(request):
 				probLossQuery = ProbabilityOfLoss.objects.get(case = dmgAssFormObj.case.pk)
 				query = probLossQuery.protection.all()
 				dmgAssCounter = DamageAssessmentCounter.objects.get(probLoss = dmgAssFormObj.case.pk)
-				if dmgAssCounter.is_init(): #First damage assessment is Let it Burn
+				if dmgAssCounter.is_init(): #First damage assessment is Base Case
 					dmgAssForm = DamageAssessmentForm(initial={'case': dmgAssFormObj.case.pk, 'name': ' '})
 					dmgAssFormObj.name = "Let It Burn"
 					dmgAssFormObj.save()
@@ -387,7 +387,7 @@ class StandardAssessmentsDetailView(DetailView):
 		
 		context = super(StandardAssessmentsDetailView, self).get_context_data(**kwargs)
 		SA = context['standardassessment']
-		label = [' ', 'Let it Burn', 'Fixed', 'Mobile', 'Fixed and Mobile']
+		label = [' ', 'Base Case', 'Fixed', 'Mobile', 'Fixed and Mobile']
 		annCOP = ['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP]
 		L_TL = SA.L_PDA_total + SA.L_BIE_totalBIE + SA.L_OL_total
 		F_TL = SA.F_PDA_total + SA.F_BIE_totalBIE + SA.F_OL_total
@@ -399,7 +399,7 @@ class StandardAssessmentsDetailView(DetailView):
 		ALR = ['Annual Loss Reduction with Protection', RBL[1]-RBL[1], RBL[1]-RBL[2], RBL[1]-RBL[3], RBL[1]-RBL[4]]
 		BCR = ['Benefit-to-Cost Ratio', 0, round((ALR[2]/annCOP[2])*10)/10, round((ALR[3]/annCOP[3])*10)/10, round((ALR[4]/annCOP[4])*10)/10]
 		context['BCR_Table'] = [label, roundList(annCOP), roundList(totalLoss), PL, roundList(RBL), roundList(ALR), BCR]
-		context['Summary_Table'] = [['Case Description', SA.summary_CaseDesc],['Let it Burn', SA.summary_L],['Fixed', SA.summary_F],['Mobile', SA.summary_M],['Fixed and Mobile', SA.summary_FM],['Results', SA.summary_Results],['Assumptions and Options Considered', SA.summary_Ass],['Conclusions', SA.summary_Conc]]
+		context['Summary_Table'] = [['Case Description', SA.summary_CaseDesc],['Base Case', SA.summary_L],['Fixed', SA.summary_F],['Mobile', SA.summary_M],['Fixed and Mobile', SA.summary_FM],['Results', SA.summary_Results],['Assumptions and Options Considered', SA.summary_Ass],['Conclusions', SA.summary_Conc]]
 
 		return context
 		#print(context)
@@ -507,7 +507,7 @@ def exportPDF(request):
 	
 	pk = request.session['pk']
 	SA = get_object_or_404(StandardAssessment, pk=pk)
-	label = [' ', 'Let it Burn', 'Fixed', 'Mobile', 'Fixed and Mobile']
+	label = [' ', 'Base Case', 'Fixed', 'Mobile', 'Fixed and Mobile']
 	annCOP = roundList(['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP])
 	L_TL = SA.L_PDA_total + SA.L_BIE_totalBIE + SA.L_OL_total
 	F_TL = SA.F_PDA_total + SA.F_BIE_totalBIE + SA.F_OL_total
@@ -520,33 +520,54 @@ def exportPDF(request):
 	BCR = ['Benefit-to-Cost Ratio', 0, round((ALR[2]/annCOP[2])*10)/10, round((ALR[3]/annCOP[3])*10)/10, round((ALR[4]/annCOP[4])*10)/10]
 	
 	p = canvas.Canvas(response, pagesize=A4)
-	p.drawString(inch*1,inch*10.5,str(SA.title))
+
+	
+	p.drawString(inch*1,inch*10.5,("Assessment #"+str(SA.number)+"-"+str(SA.title)))
+	p.setFont("Helvetica", 8)
+	p.drawString(inch*1,inch*10.3,"Site: "+str(SA.site))
+	p.drawString(inch*1,inch*10.1,"Unit: "+str(SA.unit))
 	
 	
 	for i,lab in enumerate(label):
+		y = inch*9.8
+		del_y = inch*0.25
 		if i>0:
 			p.setFont("Helvetica", 8)
-			p.drawString(inch*(i+2), inch*10, str(lab))
-			p.drawString(inch*(i+2), inch*9.75, '${:,}'.format(annCOP[i]))
-			p.drawString(inch*(i+2), inch*9.5, '${:,}'.format(totalLoss[i]))
-			p.drawString(inch*(i+2), inch*9.25, '{:.2e}'.format(PL[i]))
-			p.drawString(inch*(i+2), inch*9.0, '${:,}'.format(RBL[i]))
-			p.drawString(inch*(i+2), inch*8.75, '${:,}'.format(ALR[i]))
-			p.drawString(inch*(i+2), inch*8.5, str(BCR[i]))	
+			p.drawString(inch*(i+2), y, str(lab))
+			y -= del_y
+			p.drawString(inch*(i+2), y, '${:,}'.format(annCOP[i]))
+			y -= del_y
+			p.drawString(inch*(i+2), y, '${:,}'.format(totalLoss[i]))
+			y -= del_y
+			p.drawString(inch*(i+2), y, '{:.2e}'.format(PL[i]))
+			y -= del_y
+			p.drawString(inch*(i+2), y, '${:,}'.format(RBL[i]))
+			y -= del_y
+			p.drawString(inch*(i+2), y, '${:,}'.format(ALR[i]))
+			y -= del_y
+			p.drawString(inch*(i+2), y, str(BCR[i]))
+			y -= del_y
 		else:
 			p.setFont("Helvetica-Bold", 8)
-			p.drawString(inch*(i+1), inch*10, str(lab))
-			p.drawString(inch*(i+1), inch*9.75, str(annCOP[i]))
-			p.drawString(inch*(i+1), inch*9.5, str(totalLoss[i]))
-			p.drawString(inch*(i+1), inch*9.25, str(PL[i]))
-			p.drawString(inch*(i+1), inch*9.0, str(RBL[i]))
-			p.drawString(inch*(i+1), inch*8.75, str(ALR[i]))
-			p.drawString(inch*(i+1), inch*8.5, str(BCR[i]))
+			p.drawString(inch*(i+1), y, str(lab))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(annCOP[i]))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(totalLoss[i]))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(PL[i]))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(RBL[i]))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(ALR[i]))
+			y -= del_y
+			p.drawString(inch*(i+1), y, str(BCR[i]))
+			y -= del_y
 
 	p.setFont("Helvetica", 8)
 	y_sectionSpacing = 0.1*inch
-	y = PDFWriteCell(p, inch*8, 'Case Description', SA.summary_CaseDesc)-y_sectionSpacing
-	y = PDFWriteCell(p, y, 'Let it Burn', SA.summary_L)-y_sectionSpacing
+	y = PDFWriteCell(p, y-0.25*inch, 'Case Description', SA.summary_CaseDesc)-y_sectionSpacing
+	y = PDFWriteCell(p, y, 'Base Case', SA.summary_L)-y_sectionSpacing
 	y = PDFWriteCell(p, y, 'Fixed', SA.summary_F)-y_sectionSpacing
 	y = PDFWriteCell(p, y, 'Mobile', SA.summary_M)-y_sectionSpacing
 	y = PDFWriteCell(p, y, 'Fixed and Mobile', SA.summary_FM)-y_sectionSpacing
@@ -555,39 +576,39 @@ def exportPDF(request):
 	y = PDFWriteCell(p, y, 'Conclusions', SA.summary_Conc)-y_sectionSpacing
 	
 	p.showPage()
-	p.drawString(inch*1,inch*11,SA.title+' Detailed Report')
-	#p.drawString(x,y,text)
-	y = inch*10+y_sectionSpacing
+	p.drawString(inch*1,inch*11,"Assessment #"+str(SA.number)+"-"+str(SA.title)+' Detailed Report')
+	y = inch*10.75+y_sectionSpacing
 	fields, verboseNames = zip(*[(f.name, f.verbose_name) for f in StandardAssessment._meta.get_fields()])
-	ind = 4
+	ind = 5
 	header = False
 	subheader = False
 	cur_subheader = ''
 	cur_header = ''
+	del_y = 0.25*inch
+	spacer_multiplier = 1
+	header_fontsize = 14
+	subheader_fontsize = 10
 	while ind < (len(fields)-8):
 		name = fields[ind]
 		change_header = bool(cur_header not in name) #the current field name is not part of the current header. Change the header
 		change_subheader = bool(cur_subheader not in name[:2])
 		if not header:
 			if 'PL_' in name:
-				y = writeHeader(p,y-inch*0.25,14,"Probability of Loss")
+				y = writeHeader(p,y-del_y,header_fontsize,"Probability of Loss")
 				cur_header = 'PL_'
 			elif 'PDA_' in name:
-				y = writeHeader(p,y-inch*0.25,14,"Physical Damage Assessment")
+				y = writeHeader(p,y-del_y,header_fontsize,"Physical Damage Assessment")
 				cur_header = 'PDA_'
 			elif 'BIE_' in name:
-				y = writeHeader(p,y-inch*0.25,14,"Business Interruption Estimate")
+				y = writeHeader(p,y-del_y,header_fontsize,"Business Interruption Estimate")
 				cur_header = 'BIE_'
 			elif 'OL_' in name:
-				y = writeHeader(p,y-inch*0.25,14,"Other Losses")
+				y = writeHeader(p,y-del_y,header_fontsize,"Other Losses")
 				cur_header = 'OL_'
 			elif 'COP_' in name:
-				y = writeHeader(p,y-inch*0.25,14,"Cost of Protection")
-				print(fields[ind])
-				print(fields[ind+1])
-				print(fields[ind+2])
-				#y = PDFWriteRow(p, y, verboseNames[ind], getattr(SA, fields[ind]), '')-y_sectionSpacing*1.5
-				#y = PDFWriteRow(p, y, verboseNames[ind+1], getattr(SA, fields[ind+1]), '')-y_sectionSpacing*1.5
+				y = writeHeader(p,y-del_y,header_fontsize,"Cost of Protection")
+				y = PDFWriteRow(p, y, verboseNames[ind], getattr(SA, fields[ind]), '')-y_sectionSpacing*spacer_multiplier
+				y = PDFWriteRow(p, y, verboseNames[ind+1], getattr(SA, fields[ind+1]), '')-y_sectionSpacing*spacer_multiplier
 				ind += 2
 				cur_header = 'COP_'
 			else:
@@ -596,16 +617,16 @@ def exportPDF(request):
 			header = True
 		elif not subheader:
 			if 'L_' in name[:2]:
-				y = writeHeader(p,y,10,"Let it Burn")
+				y = writeHeader(p,y,subheader_fontsize,"Base Case")
 				cur_subheader = 'L_'
 			elif 'F_' in name[:2]:
-				y = writeHeader(p,y,10,"Fixed")
+				y = writeHeader(p,y-y_sectionSpacing*1.25,subheader_fontsize,"Fixed")
 				cur_subheader = 'F_'
 			elif 'M_' in name[:2]:
-				y = writeHeader(p,y,10,"Mobile")
+				y = writeHeader(p,y-y_sectionSpacing*1.25,subheader_fontsize,"Mobile")
 				cur_subheader = 'M_'
 			elif 'FM' in name[:2]:
-				y = writeHeader(p,y,10,"Fixed and Mobile")
+				y = writeHeader(p,y-y_sectionSpacing*1.25,subheader_fontsize,"Fixed and Mobile")
 				cur_subheader = 'FM'
 			else:
 				print(fields[ind])
@@ -623,7 +644,7 @@ def exportPDF(request):
 			elif verboseNames[ind] == 'COP interestRate':
 				ind += 1
 			else:
-				y = PDFWriteRow(p, y, verboseNames[ind], value, text)-y_sectionSpacing*1.5
+				y = PDFWriteRow(p, y, verboseNames[ind], value, text)-y_sectionSpacing*spacer_multiplier
 				ind +=2
 
 			if y<inch:
