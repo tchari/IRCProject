@@ -502,10 +502,12 @@ def writeHeader(p,y,fontSize, text):
 def exportPDF(request):
 
 	response = HttpResponse(content_type='application/pdf')
-	response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+	
 	
 	pk = request.session['pk']
 	SA = get_object_or_404(StandardAssessment, pk=pk)
+	filename = "#"+str(SA.number)+": "+str(SA.title)+".pdf"
+	response['Content-Disposition'] = 'attachment; filename="'+filename+'"'
 	label = [' ', 'Base Case', 'Fixed', 'Mobile', 'Fixed and Mobile']
 	annCOP = roundList(['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP])
 	L_TL = SA.L_PDA_total + SA.L_BIE_totalBIE + SA.L_OL_total
