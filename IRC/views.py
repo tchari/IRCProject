@@ -503,10 +503,10 @@ def exportPDF(request):
 
 	response = HttpResponse(content_type='application/pdf')
 	
-	
 	pk = request.session['pk']
 	SA = get_object_or_404(StandardAssessment, pk=pk)
-	filename = "#"+str(SA.number)+": "+str(SA.title)+".pdf"
+	filename_title = str(SA.title)
+	filename = "#"+str(SA.number)+": "+filename_title[:20]+".pdf"
 	response['Content-Disposition'] = 'attachment; filename="'+filename+'"'
 	label = [' ', 'Base Case', 'Fixed', 'Mobile', 'Fixed and Mobile']
 	annCOP = roundList(['Annual Cost of Protection', SA.L_COP_annualCOP, SA.F_COP_annualCOP, SA.M_COP_annualCOP, SA.FM_COP_annualCOP])
